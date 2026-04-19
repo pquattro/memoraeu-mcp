@@ -2,17 +2,17 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.pquattro/memoraeu-mcp",
   "title": "MemoraEU",
-  "description": "Zero-knowledge persistent memory layer for Claude — AES-256-GCM encrypted, semantic search, EU hosted.",
+  "description": "Zero-knowledge persistent memory for Claude — encrypted, semantic search, EU hosted.",
   "repository": {
     "url": "https://github.com/pquattro/memoraeu-memoraeu-mcp.git",
     "source": "github"
   },
-  "version": "0.1.1",
+  "version": "0.1.2",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "memoraeu-mcp",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"
