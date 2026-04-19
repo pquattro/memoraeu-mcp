@@ -1,0 +1,17 @@
+{
+  "name": "memoraeu-mcp",
+  "version": "0.1.1",
+  "description": "Zero-knowledge persistent memory layer for Claude — AES-256-GCM encrypted, semantic search, EU hosted.",
+  "publisher": "pquattro",
+  "sourceUrl": "https://github.com/pquattro/memoraeu-memoraeu-mcp",
+  "license": "MIT",
+  "runtime": "python",
+  "installCommand": "pip install memoraeu-mcp",
+  "tools": [
+    { "name": "remember",        "description": "Memorizes important information automatically" },
+    { "name": "recall",          "description": "Semantic search across stored memories" },
+    { "name": "forget",          "description": "Deletes a memory by ID" },
+    { "name": "list_memories",   "description": "Lists recent memories with optional category filter" },
+    { "name": "list_categories", "description": "Returns existing categories sorted by usage" }
+  ]
+}
