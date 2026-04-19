@@ -1,17 +1,54 @@
 {
-  "name": "memoraeu-mcp",
-  "version": "0.1.1",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.pquattro/memoraeu-mcp",
+  "title": "MemoraEU",
   "description": "Zero-knowledge persistent memory layer for Claude — AES-256-GCM encrypted, semantic search, EU hosted.",
-  "publisher": "pquattro",
-  "sourceUrl": "https://github.com/pquattro/memoraeu-memoraeu-mcp",
-  "license": "MIT",
-  "runtime": "python",
-  "installCommand": "pip install memoraeu-mcp",
-  "tools": [
-    { "name": "remember",        "description": "Memorizes important information automatically" },
-    { "name": "recall",          "description": "Semantic search across stored memories" },
-    { "name": "forget",          "description": "Deletes a memory by ID" },
-    { "name": "list_memories",   "description": "Lists recent memories with optional category filter" },
-    { "name": "list_categories", "description": "Returns existing categories sorted by usage" }
+  "repository": {
+    "url": "https://github.com/pquattro/memoraeu-memoraeu-mcp.git",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "memoraeu-mcp",
+      "version": "0.1.1",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MEMORAEU_API_URL",
+          "description": "MemoraEU API endpoint (default: https://api.memoraeu.isquarecube.fr)",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "MEMORAEU_API_KEY",
+          "description": "Your MemoraEU API key (starts with meu-sk-). Create one at app.memoraeu.isquarecube.fr.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "MEMORAEU_SECRET",
+          "description": "Your encryption secret (never sent to the server). Found in Settings on app.memoraeu.isquarecube.fr.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "MEMORAEU_SALT",
+          "description": "Your encryption salt. Found in Settings on app.memoraeu.isquarecube.fr.",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "MISTRAL_API_KEY",
+          "description": "Mistral API key for semantic embeddings. Get one at console.mistral.ai.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
   ]
 }

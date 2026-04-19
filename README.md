@@ -1,5 +1,7 @@
 # memoraeu-mcp
 
+<!-- mcp-name: io.github.pquattro/memoraeu-mcp -->
+
 > 🇬🇧 [English](#english) | 🇫🇷 [Français](#français)
 
 ---
