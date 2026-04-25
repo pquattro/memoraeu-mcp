@@ -12,11 +12,9 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
 
-# M6 — 210 000 itérations (recommandation OWASP 2024 pour PBKDF2-SHA256)
-PBKDF2_ITERATIONS = 210_000
-
-# M1 — Préfixe magique pour détecter les valeurs chiffrées sans ambiguïté
-ENC_PREFIX = "ENCv1:"
+# Salt fixe par installation (stocké dans .env)
+# En phase 2 : un salt par user stocké côté serveur
+PBKDF2_ITERATIONS = 100_000
 
 
 def derive_key(password: str, salt: str) -> bytes:
@@ -37,22 +35,19 @@ def derive_key(password: str, salt: str) -> bytes:
 def encrypt(plaintext: str, key: bytes) -> str:
     """
     Chiffre un texte avec AES-256-GCM.
-    Retourne : ENCv1:<base64(nonce[12] + ciphertext + tag[16])>
+    Retourne : base64(nonce[12] + ciphertext + tag[16])
     """
     nonce = os.urandom(12)
     ciphertext = AESGCM(key).encrypt(nonce, plaintext.encode("utf-8"), None)
-    return ENC_PREFIX + base64.b64encode(nonce + ciphertext).decode("ascii")
+    return base64.b64encode(nonce + ciphertext).decode("ascii")
 
 
 def decrypt(ciphertext_b64: str, key: bytes) -> str:
     """
     Déchiffre un texte chiffré par encrypt().
-    Accepte les anciens formats (sans préfixe) pour rétrocompatibilité.
     Lève une exception si la clé est mauvaise ou les données corrompues.
     """
-    # Retirer le préfixe si présent
-    raw = ciphertext_b64[len(ENC_PREFIX):] if ciphertext_b64.startswith(ENC_PREFIX) else ciphertext_b64
-    data = base64.b64decode(raw)
+    data = base64.b64decode(ciphertext_b64)
     nonce = data[:12]
     ciphertext = data[12:]
     plaintext = AESGCM(key).decrypt(nonce, ciphertext, None)
@@ -61,14 +56,11 @@ def decrypt(ciphertext_b64: str, key: bytes) -> str:
 
 def is_encrypted(value: str) -> bool:
     """
-    M1 — Détecte si une valeur est chiffrée via le préfixe ENCv1:
-    Rétrocompatible : accepte aussi les anciens blobs base64 bruts (≥ 28 octets).
+    Détecte si une valeur est déjà chiffrée (base64 valide de longueur minimale).
+    Permet la compatibilité avec les mémoires existantes en clair.
     """
-    if value.startswith(ENC_PREFIX):
-        return True
-    # Rétrocompatibilité anciens blobs sans préfixe
     try:
         data = base64.b64decode(value)
-        return len(data) >= 28  # nonce(12) + tag(16) minimum
+        return len(data) > 12  # nonce(12) + au moins 1 octet
     except Exception:
         return False

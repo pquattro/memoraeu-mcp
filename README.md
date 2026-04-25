@@ -43,7 +43,7 @@ Add to your `claude_desktop_config.json`:
       "command": "uvx",
       "args": ["memoraeu-mcp"],
       "env": {
-        "MEMORAEU_API_URL": "https://api.memoraeu.isquarecube.fr",
+        "MEMORAEU_API_URL": "https://api.memoraeu.com",
         "MEMORAEU_API_KEY": "meu-sk-...",
         "MEMORAEU_SECRET": "your-secret",
         "MEMORAEU_SALT": "your-salt",
@@ -56,7 +56,7 @@ Add to your `claude_desktop_config.json`:
 
 ### Getting your keys
 
-1. Sign up at [app.memoraeu.isquarecube.fr](https://app.memoraeu.isquarecube.fr)
+1. Sign up at [app.memoraeu.com](https://app.memoraeu.com)
 2. Go to **Settings** → copy `MEMORAEU_SECRET` and `MEMORAEU_SALT`
 3. Create an API key → copy `MEMORAEU_API_KEY`
 4. Get a Mistral API key at [console.mistral.ai](https://console.mistral.ai)
@@ -120,7 +120,7 @@ Ajoutez dans votre `claude_desktop_config.json` :
       "command": "uvx",
       "args": ["memoraeu-mcp"],
       "env": {
-        "MEMORAEU_API_URL": "https://api.memoraeu.isquarecube.fr",
+        "MEMORAEU_API_URL": "https://api.memoraeu.com",
         "MEMORAEU_API_KEY": "meu-sk-...",
         "MEMORAEU_SECRET": "votre-secret",
         "MEMORAEU_SALT": "votre-salt",
@@ -133,7 +133,7 @@ Ajoutez dans votre `claude_desktop_config.json` :
 
 ### Obtenir vos clés
 
-1. Créez un compte sur [app.memoraeu.isquarecube.fr](https://app.memoraeu.isquarecube.fr)
+1. Créez un compte sur [app.memoraeu.com](https://app.memoraeu.com)
 2. Allez dans **Paramètres** → copiez `MEMORAEU_SECRET` et `MEMORAEU_SALT`
 3. Créez une clé API → copiez `MEMORAEU_API_KEY`
 4. Obtenez une clé Mistral sur [console.mistral.ai](https://console.mistral.ai)

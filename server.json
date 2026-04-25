@@ -20,25 +20,25 @@
       "environmentVariables": [
         {
           "name": "MEMORAEU_API_URL",
-          "description": "MemoraEU API endpoint (default: https://api.memoraeu.isquarecube.fr)",
+          "description": "MemoraEU API endpoint (default: https://api.memoraeu.com)",
           "isRequired": false,
           "isSecret": false
         },
         {
           "name": "MEMORAEU_API_KEY",
-          "description": "Your MemoraEU API key (starts with meu-sk-). Create one at app.memoraeu.isquarecube.fr.",
+          "description": "Your MemoraEU API key (starts with meu-sk-). Create one at app.memoraeu.com.",
           "isRequired": true,
           "isSecret": true
         },
         {
           "name": "MEMORAEU_SECRET",
-          "description": "Your encryption secret (never sent to the server). Found in Settings on app.memoraeu.isquarecube.fr.",
+          "description": "Your encryption secret (never sent to the server). Found in Settings on app.memoraeu.com.",
           "isRequired": true,
           "isSecret": true
         },
         {
           "name": "MEMORAEU_SALT",
-          "description": "Your encryption salt. Found in Settings on app.memoraeu.isquarecube.fr.",
+          "description": "Your encryption salt. Found in Settings on app.memoraeu.com.",
           "isRequired": true,
           "isSecret": true
         },
