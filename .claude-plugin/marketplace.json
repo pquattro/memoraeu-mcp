@@ -1,0 +1,16 @@
+{
+  "name": "memoraeu",
+  "owner": {
+    "name": "MemoraEU",
+    "email": "contact@memoraeu.com",
+    "url": "https://memoraeu.com"
+  },
+  "plugins": [
+    {
+      "name": "memoraeu-mcp",
+      "source": "./",
+      "description": "Zero-knowledge persistent memory for Claude — encrypted, semantic search, EU hosted.",
+      "version": "0.1.7"
+    }
+  ]
+}
