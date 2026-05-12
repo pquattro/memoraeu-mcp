@@ -7,6 +7,29 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) — [Semantic V
 
 ---
 
+## [0.1.9] - 2026-05-12
+
+### Added / Ajouté
+- **`remember_fact`** — mémorise un fait structuré avec validité temporelle (subject, predicate, object) ; invalide automatiquement l'ancienne valeur sur le même prédicat. Chiffrement côté MCP avant envoi.
+- **`recall_facts`** — rappel des faits actifs pour un sujet donné (valeur courante uniquement)
+- **`invalidate_fact`** — invalide explicitement un fait par son ID
+- **`api_put`** — helper interne pour les requêtes PUT vers l'API
+- Manifestes marketplace mis à jour (`server.json`, `.claude-plugin/`)
+
+### Changed / Modifié
+- PBKDF2 : 210 000 itérations (recommandation OWASP 2024), préfixe `ENCv1:` sur les ciphertexts
+- README : quick start, badges, section Why, Contributing, licence AGPL v3
+
+---
+
+## [0.1.5] - 2026-04-28
+
+### Changed / Modifié
+- PBKDF2 : 210k itérations + préfixe `ENCv1:` sur les ciphertexts
+- Refonte sécurité complète (revue externe)
+
+---
+
 ## [0.1.1] - 2026-04-19
 
 ### Fixed / Corrigé

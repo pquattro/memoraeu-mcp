@@ -4,7 +4,7 @@
   "title": "MemoraEU",
   "description": "Zero-knowledge persistent memory for Claude — encrypted, semantic search, EU hosted.",
   "repository": {
-    "url": "https://github.com/pquattro/memoraeu-memoraeu-mcp.git",
+    "url": "https://github.com/pquattro/memoraeu-mcp.git",
     "source": "github"
   },
   "version": "0.1.2",

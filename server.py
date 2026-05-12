@@ -175,6 +175,12 @@ async def api_get(path: str, params: dict = None) -> dict:
         r.raise_for_status()
         return r.json()
 
+async def api_put(path: str, body: dict, timeout: float = 30.0) -> dict:
+    async with httpx.AsyncClient() as client:
+        r = await client.put(f"{API_BASE}{path}", json=body, headers=_auth_headers(), timeout=timeout)
+        r.raise_for_status()
+        return r.json()
+
 async def api_delete(path: str) -> bool:
     async with httpx.AsyncClient(timeout=30.0) as client:
         r = await client.delete(f"{API_URL}{path}", headers=_auth_headers())
@@ -334,6 +340,57 @@ async def list_tools() -> list[Tool]:
             description="Retourne les catégories existantes triées par usage.",
             inputSchema={"type": "object", "properties": {}}
         ),
+        Tool(
+            name="remember_fact",
+            description=(
+                "Mémorise un fait structuré avec validité temporelle. "
+                "Utilise cet outil quand un fait peut devenir faux avec le temps "
+                "(ex: stack technique, tarif, contact, config). "
+                "Invalide automatiquement l'ancienne valeur sur le même (subject, predicate). "
+                "L'objet est chiffré côté MCP avant envoi."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "subject": {"type": "string", "description": "Entité concernée (ex: 'scanner_iot', 'client_acme')"},
+                    "predicate": {"type": "string", "description": "Relation/propriété (ex: 'utilise_hardware', 'tarif_mensuel')"},
+                    "object": {"type": "string", "description": "Valeur actuelle (ex: 'Raspberry Pi 4', '299€')"},
+                    "valid_from": {"type": "string", "description": "Date de début YYYY-MM-DD (défaut: aujourd'hui)"},
+                    "scope": {"type": "string", "enum": ["private", "org"], "default": "private"}
+                },
+                "required": ["subject", "predicate", "object"]
+            }
+        ),
+        Tool(
+            name="recall_facts",
+            description=(
+                "Récupère les faits structurés actifs pour un sujet donné. "
+                "Utilise cet outil pour vérifier l'état actuel d'une entité "
+                "avant de prendre une décision ou de répondre sur ses caractéristiques."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "subject": {"type": "string", "description": "Entité à interroger"},
+                    "predicate": {"type": "string", "description": "Propriété spécifique (optionnel)"},
+                    "scope": {"type": "string", "enum": ["private", "org"], "default": "private"},
+                    "history": {"type": "boolean", "default": False, "description": "Inclure les faits expirés"}
+                },
+                "required": ["subject"]
+            }
+        ),
+        Tool(
+            name="invalidate_fact",
+            description="Marque un fait comme expiré (il n'est plus vrai). Utilise l'ID retourné par remember_fact.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "fact_id": {"type": "string"},
+                    "valid_to": {"type": "string", "description": "Date de fin YYYY-MM-DD (défaut: aujourd'hui)"}
+                },
+                "required": ["fact_id"]
+            }
+        ),
     ]
 
 @app.call_tool()
@@ -469,6 +526,63 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
                 return [TextContent(type="text", text="Aucune catégorie.")]
             lines = ["📁 Catégories :\n"] + [f"• {c['name']} ({c['usage_count']})" for c in cats]
             return [TextContent(type="text", text="\n".join(lines))]
+        except Exception as e:
+            return [TextContent(type="text", text=f"❌ Erreur : {e}")]
+
+    elif name == "remember_fact":
+        try:
+            encrypted_object = encrypt_content(arguments["object"])
+            payload = {
+                "subject": arguments["subject"],
+                "predicate": arguments["predicate"],
+                "object": encrypted_object,
+                "scope": arguments.get("scope", "private"),
+            }
+            if arguments.get("valid_from"):
+                payload["valid_from"] = arguments["valid_from"]
+            fact = await api_post("/facts", payload)
+            supersedes_note = f" (remplace {fact['supersedes'][:8]}…)" if fact.get("supersedes") else ""
+            lock = "🔒" if get_key() else "📝"
+            return [TextContent(type="text", text=(
+                f"✅ Fait mémorisé {lock}{supersedes_note}\n"
+                f"  {fact['subject']} → {fact['predicate']}\n"
+                f"  Depuis: {fact['valid_from']} | ID: {fact['id'][:8]}…"
+            ))]
+        except Exception as e:
+            return [TextContent(type="text", text=f"❌ Erreur : {e}")]
+
+    elif name == "recall_facts":
+        try:
+            params = {
+                "subject": arguments["subject"],
+                "scope": arguments.get("scope", "private"),
+                "history": str(arguments.get("history", False)).lower(),
+            }
+            if arguments.get("predicate"):
+                params["predicate"] = arguments["predicate"]
+            facts = await api_get("/facts", params=params)
+            if not facts:
+                return [TextContent(type="text", text="Aucun fait trouvé.")]
+            lines = [f"📊 {len(facts)} fait(s) pour '{arguments['subject']}' :\n"]
+            for f in facts:
+                obj = decrypt_content(f["object"])
+                validity = f["valid_from"]
+                if f.get("valid_to"):
+                    validity += f" → {f['valid_to']} (expiré)"
+                else:
+                    validity += " → aujourd'hui"
+                lines.append(f"• {f['predicate']}: {obj}\n  [{validity}] | ID: {f['id'][:8]}…")
+            return [TextContent(type="text", text="\n".join(lines))]
+        except Exception as e:
+            return [TextContent(type="text", text=f"❌ Erreur : {e}")]
+
+    elif name == "invalidate_fact":
+        try:
+            body = {}
+            if arguments.get("valid_to"):
+                body["valid_to"] = arguments["valid_to"]
+            await api_put(f"/facts/{arguments['fact_id']}/invalidate", body)
+            return [TextContent(type="text", text=f"✅ Fait {arguments['fact_id'][:8]}… invalidé.")]
         except Exception as e:
             return [TextContent(type="text", text=f"❌ Erreur : {e}")]
 

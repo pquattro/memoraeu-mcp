@@ -78,6 +78,33 @@ These five variables serve three distinct purposes — they are **not interchang
 4. Go to **Settings → API Keys** → create a key → copy `MEMORAEU_API_KEY`
 5. Get a Mistral API key at [console.mistral.ai](https://console.mistral.ai)
 
+### Remote MCP via SSE (no local install)
+
+You can connect directly from claude.ai web, Cursor, Windsurf or any remote MCP client without installing anything locally:
+
+```
+SSE endpoint: https://api.memoraeu.com/mcp/sse
+Auth: Authorization: Bearer meu-sk-...
+```
+
+Example config for Cursor / Windsurf:
+
+```json
+{
+  "mcpServers": {
+    "memoraeu": {
+      "type": "sse",
+      "url": "https://api.memoraeu.com/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer meu-sk-..."
+      }
+    }
+  }
+}
+```
+
+> **Note:** In SSE remote mode, content is not zero-knowledge encrypted (the server handles plaintext). Use the local `stdio` install for full zero-knowledge guarantees.
+
 ### Available tools
 
 | Tool | Description |
@@ -87,6 +114,9 @@ These five variables serve three distinct purposes — they are **not interchang
 | `forget` | Deletes a memory by ID |
 | `list_memories` | Lists recent memories with optional category filter |
 | `list_categories` | Returns existing categories sorted by usage |
+| `remember_fact` | Stores a structured fact (subject/predicate/object) with temporal validity |
+| `recall_facts` | Retrieves active facts for a subject |
+| `invalidate_fact` | Marks a fact as expired by its ID |
 
 ### Self-hosting
 
@@ -172,6 +202,33 @@ Ces cinq variables ont trois rôles distincts — elles **ne sont pas interchang
 4. Allez dans **Paramètres → Clés API** → créez une clé → copiez `MEMORAEU_API_KEY`
 5. Obtenez une clé Mistral sur [console.mistral.ai](https://console.mistral.ai)
 
+### MCP Remote via SSE (sans installation locale)
+
+Connectez-vous directement depuis claude.ai web, Cursor, Windsurf ou tout client MCP distant sans rien installer :
+
+```
+Endpoint SSE : https://api.memoraeu.com/mcp/sse
+Auth : Authorization: Bearer meu-sk-...
+```
+
+Exemple de config Cursor / Windsurf :
+
+```json
+{
+  "mcpServers": {
+    "memoraeu": {
+      "type": "sse",
+      "url": "https://api.memoraeu.com/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer meu-sk-..."
+      }
+    }
+  }
+}
+```
+
+> **Note :** En mode SSE distant, le contenu n'est pas chiffré zero-knowledge (le serveur traite le texte en clair). Utilisez l'installation locale `stdio` pour les garanties zero-knowledge complètes.
+
 ### Outils disponibles
 
 | Outil | Description |
@@ -181,6 +238,9 @@ Ces cinq variables ont trois rôles distincts — elles **ne sont pas interchang
 | `forget` | Supprime une mémoire par son ID |
 | `list_memories` | Liste les mémoires récentes avec filtre optionnel |
 | `list_categories` | Retourne les catégories existantes triées par usage |
+| `remember_fact` | Stocke un fait structuré (sujet/prédicat/objet) avec validité temporelle |
+| `recall_facts` | Récupère les faits actifs pour un sujet |
+| `invalidate_fact` | Marque un fait comme expiré par son ID |
 
 ### Auto-hébergement
 
