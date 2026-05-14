@@ -1,0 +1,40 @@
+startCommand:
+  type: stdio
+
+configSchema:
+  type: object
+  required:
+    - memoraeuApiKey
+    - memoraeuSecret
+    - memoraeuSalt
+  properties:
+    memoraeuApiKey:
+      type: string
+      description: "API key (Bearer token). Get it from app.memoraeu.com → Settings → API Keys."
+    memoraeuSecret:
+      type: string
+      description: "Your MemoraEU login password — used as PBKDF2 input to derive the AES-256-GCM encryption key locally. Never sent to the server."
+    memoraeuSalt:
+      type: string
+      description: "KDF salt unique to your account. Get it from app.memoraeu.com → Settings → Encryption Keys."
+    memoraeuApiUrl:
+      type: string
+      description: "API endpoint. Use https://api.memoraeu.com for the hosted service, or your self-hosted URL."
+      default: "https://api.memoraeu.com"
+    mistralApiKey:
+      type: string
+      description: "Mistral API key for local embedding generation (zero-knowledge search). Without it, semantic search falls back to keyword search. Get it from console.mistral.ai."
+      default: ""
+
+commandFunction: |
+  config => ({
+    command: "uvx",
+    args: ["memoraeu-mcp@latest"],
+    env: {
+      MEMORAEU_API_KEY: config.memoraeuApiKey,
+      MEMORAEU_SECRET: config.memoraeuSecret,
+      MEMORAEU_SALT: config.memoraeuSalt,
+      MEMORAEU_API_URL: config.memoraeuApiUrl || "https://api.memoraeu.com",
+      MISTRAL_API_KEY: config.mistralApiKey || "",
+    }
+  })
