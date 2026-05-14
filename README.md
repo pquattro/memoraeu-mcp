@@ -70,6 +70,8 @@ These five variables serve three distinct purposes — they are **not interchang
 >
 > Zero-knowledge means the server never sees your plaintext. To enable semantic search, embeddings must be computed **before** the content is encrypted — on your machine. The MCP calls Mistral directly with the plaintext, gets the embedding vector, encrypts the content, then sends both to the server. The server stores the opaque blob and the vector, but cannot reconstruct the original text. Without `MISTRAL_API_KEY`, semantic search will not work.
 
+> **Without `MISTRAL_API_KEY`:** The MCP will still work — `remember` and `recall` will function, but semantic search will fall back to keyword-based search on the server side. Zero-knowledge encryption is unaffected.
+
 ### Getting your keys
 
 1. Sign up at [app.memoraeu.com](https://app.memoraeu.com)
@@ -117,6 +119,38 @@ Example config for Cursor / Windsurf:
 | `remember_fact` | Stores a structured fact (subject/predicate/object) with temporal validity |
 | `recall_facts` | Retrieves active facts for a subject |
 | `invalidate_fact` | Marks a fact as expired by its ID |
+
+### Auto-memory behavior
+
+The MCP server is designed to work without manual intervention:
+
+**Automatic recall** — On the first user message of each session, `recall` is called automatically
+with the detected topic as query. Recent memories are also loaded via the `memoraeu://context`
+resource and injected as session context.
+
+**Automatic remember** — When Claude detects a memorable piece of information (preference, decision,
+biographical fact, technical constraint), it calls `remember` autonomously without waiting to be asked.
+It confirms with a single discreet line.
+
+**System prompt injection** — On the first `recall` call, the full behavior system prompt is injected
+into Claude's context, reinforcing the auto-memory rules for the rest of the session.
+
+This behavior is encoded directly in the tool descriptions. Claude models follow these instructions
+as part of tool use — no additional configuration is required.
+
+### Deduplication & compression
+
+Before storing a memory, the MCP checks for near-duplicates using vector similarity:
+
+| Similarity | Action |
+|---|---|
+| ≥ 94% | Memory skipped — exact duplicate detected |
+| 85–94% | Warning logged, memory stored anyway |
+| < 85% | Memory stored normally |
+
+Long memories (> 300 characters) are compressed by Mistral before encryption, reducing token usage
+and improving search relevance. Compression happens in plaintext, before the content is encrypted —
+the server never sees the uncompressed original either.
 
 ### Self-hosting
 
@@ -194,6 +228,8 @@ Ces cinq variables ont trois rôles distincts — elles **ne sont pas interchang
 >
 > Le zero-knowledge signifie que le serveur ne voit jamais votre texte en clair. Pour permettre la recherche sémantique, les embeddings doivent être calculés **avant** le chiffrement — sur votre machine. Le MCP appelle Mistral directement avec le texte clair, obtient le vecteur d'embedding, chiffre le contenu, puis envoie les deux au serveur. Le serveur stocke le blob opaque et le vecteur, mais ne peut pas reconstituer le texte original. Sans `MISTRAL_API_KEY`, la recherche sémantique ne fonctionnera pas.
 
+> **Sans `MISTRAL_API_KEY` :** Le MCP continue de fonctionner — `remember` et `recall` restent opérationnels, mais la recherche sémantique bascule sur une recherche par mots-clés côté serveur. Le chiffrement zero-knowledge n'est pas affecté.
+
 ### Obtenir vos clés
 
 1. Créez un compte sur [app.memoraeu.com](https://app.memoraeu.com)
@@ -241,6 +277,40 @@ Exemple de config Cursor / Windsurf :
 | `remember_fact` | Stocke un fait structuré (sujet/prédicat/objet) avec validité temporelle |
 | `recall_facts` | Récupère les faits actifs pour un sujet |
 | `invalidate_fact` | Marque un fait comme expiré par son ID |
+
+### Comportement de mémoire automatique
+
+Le serveur MCP est conçu pour fonctionner sans intervention manuelle :
+
+**Rappel automatique** — Au premier message de chaque session, `recall` est appelé automatiquement
+avec le sujet détecté comme requête. Les mémoires récentes sont également chargées via la ressource
+`memoraeu://context` et injectées dans le contexte de session.
+
+**Mémorisation automatique** — Lorsque Claude détecte une information durable (préférence, décision,
+fait biographique, contrainte technique), il appelle `remember` de façon autonome, sans attendre qu'on
+le lui demande. Il confirme par une simple ligne discrète.
+
+**Injection du prompt système** — Au premier appel à `recall`, le prompt système complet de comportement
+est injecté dans le contexte de Claude, renforçant les règles de mémoire automatique pour le reste
+de la session.
+
+Ce comportement est encodé directement dans les descriptions des outils. Les modèles Claude suivent
+ces instructions dans le cadre de l'utilisation des outils — aucune configuration supplémentaire
+n'est requise.
+
+### Déduplication et compression
+
+Avant de stocker une mémoire, le MCP vérifie les quasi-doublons par similarité vectorielle :
+
+| Similarité | Action |
+|---|---|
+| ≥ 94 % | Mémoire ignorée — doublon exact détecté |
+| 85–94 % | Avertissement journalisé, mémoire stockée quand même |
+| < 85 % | Mémoire stockée normalement |
+
+Les mémoires longues (> 300 caractères) sont compressées par Mistral avant chiffrement, réduisant
+la consommation de tokens et améliorant la pertinence des recherches. La compression s'effectue en
+texte clair, avant chiffrement du contenu — le serveur ne voit jamais l'original non compressé non plus.
 
 ### Auto-hébergement
 
