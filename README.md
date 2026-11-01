@@ -10,7 +10,7 @@
 
 **Zero-knowledge persistent memory layer for Claude — MCP server**
 
-MemoraEU gives Claude a persistent, encrypted memory. All content is encrypted **client-side** with AES-256-GCM before reaching the server — the server never sees your plaintext. Semantic search is powered by Mistral embeddings generated locally on your machine, before encryption.
+MemoraEU gives Claude a persistent, encrypted memory. All content is encrypted **client-side** with AES-256-GCM before reaching the server — the server never sees your plaintext. Semantic search is powered by Mistral embeddings generated locally on your machine, before encryption. *(Local `stdio` install. The remote SSE mode is not zero-knowledge: see the note below.)*
 
 ### Features
 
@@ -168,7 +168,7 @@ docker compose up -d
 
 **Couche mémoire persistante zero-knowledge pour Claude — serveur MCP**
 
-MemoraEU donne à Claude une mémoire persistante et chiffrée. Tout le contenu est chiffré **côté client** en AES-256-GCM avant d'atteindre le serveur — le serveur ne voit jamais le texte en clair. La recherche sémantique repose sur des embeddings Mistral générés localement, avant chiffrement.
+MemoraEU donne à Claude une mémoire persistante et chiffrée. Tout le contenu est chiffré **côté client** en AES-256-GCM avant d'atteindre le serveur — le serveur ne voit jamais le texte en clair. La recherche sémantique repose sur des embeddings Mistral générés localement, avant chiffrement. *(Installation locale `stdio`. Le mode SSE distant n'est pas zero-knowledge : voir la note ci-dessous.)*
 
 ### Fonctionnalités
 
